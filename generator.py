@@ -44,7 +44,7 @@ class Generator(object):
     self._map = Matrix(size, '#')
     self._area = [Rect(Coord(0, 0), size)]
     self._room = []
-    self._roomSize = RoomSizeRange(Size(7, 5), Size(15, 7))
+    self._roomSize = RoomSizeRange(Size(7, 5), Size(13, 7))
 
   @property
   def area(self):
@@ -95,8 +95,8 @@ class Generator(object):
   def  horizontalSplitArea(self, area):
     if area.height < self._roomSize.maxHeight * 2: return False
     self._area.remove(area)
-    min = self._roomSize.minHeight + 2
-    max = area.height - self._roomSize.minHeight - 2
+    min = self._roomSize.minHeight + 1
+    max = area.height - self._roomSize.minHeight - 1
     split = random.choice([v for v in range(min, max + 1) if v % 2])
     self._area.extend(area.horizontalSplit(split))
     return True

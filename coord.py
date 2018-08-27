@@ -22,3 +22,6 @@ class Coord(object):
 
   def __sub__(self, other):
     return Coord(self.x - other.x, self.y - other.y)
+
+  def __str__(self):
+    return str((self._x, self._y))
