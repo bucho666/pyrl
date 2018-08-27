@@ -63,3 +63,12 @@ class Rect(object):
     bottom = Rect(Coord(self.x, self.y + height- 1), Size(self.width, self.height - height+ 1))
     return (top, bottom)
 
+  @property
+  def frame(self):
+    for x in range(self.left, self.right + 1):
+      yield Coord(x, self.top)
+      yield Coord(x, self.bottom)
+    for y in range(self.top, self.bottom + 1):
+      if (y != self.top and y != self.bottom):
+        yield Coord(self.left, y)
+        yield Coord(self.right, y)

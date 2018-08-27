@@ -18,7 +18,7 @@ class TestMatrix(unittest.TestCase):
 
   def testIterate(self):
     m = Matrix(Size(2, 3))
-    self.assertEqual([c for c in m], [
+    self.assertEqual([line for line in m], [
       Coord(0, 0), Coord(1, 0),
       Coord(0, 1), Coord(1, 1),
       Coord(0, 2), Coord(1, 2)])
@@ -48,3 +48,20 @@ class TestMatrix(unittest.TestCase):
     self.assertFalse(m.isInBound(Coord(0, 3)))
     self.assertTrue(m.isInBound(Coord(0, 0)))
     self.assertTrue(m.isInBound(Coord(1, 2)))
+
+  def testLine(self):
+    m = Matrix(Size(4, 3))
+    for x in range(4):
+      m.put(Coord(x, 1), x * 2)
+    expected = [0, 2, 4, 6]
+    self.assertEqual(m.line(1), expected)
+    expected[1] = 42
+    self.assertEqual(m.line(1), [0, 2, 4, 6])
+
+  def testLines(self):
+    m = Matrix(Size(2, 3))
+    m.put(Coord(0, 0), 42);
+    m.put(Coord(1, 1), '@');
+    m.put(Coord(0, 2), 0.2);
+    self.assertEqual([line for line in m.lines], [[42, None], [None, '@'], [0.2, None]])
+

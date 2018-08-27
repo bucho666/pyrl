@@ -31,3 +31,11 @@ class Matrix(object):
 
   def isInBound(self, coord):
     return not self.isOutBound(coord)
+
+  def line(self, y):
+    return self._map[y]
+
+  @property
+  def lines(self):
+    for line in self._map:
+      yield line

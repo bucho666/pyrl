@@ -34,3 +34,16 @@ class TestRect(unittest.TestCase):
     (top, bottom) = r.horizontalSplit(4)
     self.assertEqual(top, Rect(Coord(1, 2), Size(9, 4)))
     self.assertEqual(bottom, Rect(Coord(1, 5), Size(9, 6)))
+
+  def testFrame(self):
+    r = Rect(Coord(1, 2), Size(3, 4))
+    frame = [c for c in r.frame]
+    expect = [
+      Coord(1, 2), Coord(1, 5),
+      Coord(2, 2), Coord(2, 5),
+      Coord(3, 2), Coord(3, 5),
+      Coord(1, 3), Coord(3, 3),
+      Coord(1, 4), Coord(3, 4),
+    ]
+    self.assertTrue(all([a == b for a, b in zip(frame, expect)]))
+
