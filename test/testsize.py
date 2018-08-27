@@ -12,3 +12,11 @@ class TestSize(unittest.TestCase):
     d = {Size(3, 4): 42}
     self.assertEqual(d[Size(3, 4)], 42)
 
+  def testPlusMinus(self):
+    self.assertEqual(Size(1, 2) + Size(3, 4), Size(4, 6))
+    self.assertEqual(Size(3, 4) - Size(1, 2), Size(2, 2))
+
+  def testStr(self):
+    self.assertEqual(str(Size(1, 2)), "(1, 2)")
+
+

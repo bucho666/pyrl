@@ -47,3 +47,7 @@ class TestRect(unittest.TestCase):
     ]
     self.assertTrue(all([a == b for a, b in zip(frame, expect)]))
 
+  def testReduce(self):
+    r = Rect(Coord(1, 2), Size(3, 4))
+    self.assertEqual(r.reduce(1), Rect(Coord(2, 3), Size(1, 2)))
+

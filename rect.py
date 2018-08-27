@@ -6,6 +6,12 @@ class Rect(object):
     self._coord = coord
     self._size = size
 
+  def __eq__(self, other):
+    return self.coord == other.coord and self.size == other.size
+
+  def __hash__(self):
+    return hash((self.x, self.y, self.width, self.height))
+
   @property
   def x(self):
     return self._coord.x
@@ -46,23 +52,6 @@ class Rect(object):
   def size(self):
     return self._size
 
-  def __eq__(self, other):
-    return self.coord == other.coord and self.size == other.size
-
-  def __hash__(self):
-    return hash((self.x, self.y, self.width, self.height))
-
-  def verticalSplit(self, width):
-    left = Rect(self.coord, Size(width, self.height))
-    right = Rect(Coord(self.x + width - 1, self.y), Size(self.width - width + 1, self.height))
-    return (left, right)
-
-
-  def horizontalSplit(self, height):
-    top = Rect(self.coord, Size(self.width, height))
-    bottom = Rect(Coord(self.x, self.y + height- 1), Size(self.width, self.height - height+ 1))
-    return (top, bottom)
-
   @property
   def frame(self):
     for x in range(self.left, self.right + 1):
@@ -72,3 +61,18 @@ class Rect(object):
       if (y != self.top and y != self.bottom):
         yield Coord(self.left, y)
         yield Coord(self.right, y)
+
+  def verticalSplit(self, width):
+    left = Rect(self.coord, Size(width, self.height))
+    right = Rect(Coord(self.x + width - 1, self.y), Size(self.width - width + 1, self.height))
+    return (left, right)
+
+  def horizontalSplit(self, height):
+    top = Rect(self.coord, Size(self.width, height))
+    bottom = Rect(Coord(self.x, self.y + height- 1), Size(self.width, self.height - height+ 1))
+    return (top, bottom)
+
+  def reduce(self, value):
+    coord = self.coord + Coord(value, value)
+    size = self.size - Size(value * 2, value * 2)
+    return Rect(coord, size)
