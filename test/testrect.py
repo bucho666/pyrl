@@ -44,10 +44,24 @@ class TestRect(unittest.TestCase):
       Coord(3, 2), Coord(3, 5),
       Coord(1, 3), Coord(3, 3),
       Coord(1, 4), Coord(3, 4),
-    ]
+      ]
     self.assertTrue(all([a == b for a, b in zip(frame, expect)]))
 
   def testReduce(self):
     r = Rect(Coord(1, 2), Size(3, 4))
-    self.assertEqual(r.reduce(1), Rect(Coord(2, 3), Size(1, 2)))
+    self.assertEqual(r.reduce(1), Rect(Coord(1, 2), Size(2, 3)))
+    self.assertEqual(r.reduce(2), Rect(Coord(1, 2), Size(1, 2)))
+    self.assertEqual(r.reduce(3), Rect(Coord(1, 2), Size(0, 1)))
+
+  def testIterate(self):
+    r = Rect(Coord(1, 2), Size(3, 4))
+    result = [c for c in r]
+    expect = [
+        Coord(1, 2), Coord(2, 2), Coord(3, 2),
+        Coord(1, 3), Coord(2, 3), Coord(3, 3),
+        Coord(1, 4), Coord(2, 4), Coord(3, 4),
+        Coord(1, 5), Coord(2, 5), Coord(3, 5),
+        ]
+    self.assertTrue(all([a == b for a, b in zip(result, expect)]))
+
 

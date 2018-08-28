@@ -45,6 +45,8 @@ class Generator(object):
     self._area = [Rect(Coord(0, 0), size)]
     self._room = []
     self._roomSize = RoomSizeRange(Size(7, 5), Size(13, 7))
+    self._entrance = []
+    self._entranceMax = 4
 
   @property
   def area(self):
@@ -64,22 +66,39 @@ class Generator(object):
     while lastSize != len(self._area):
       lastSize = len(self._area)
       for area in self._area:
-        self.splitArea(area)
-
-  def splitArea(self, area):
-    primary, secondary = random.sample([self.verticalSplitArea, self.horizontalSplitArea], 2)
-    if primary(area): return
-    secondary(area)
+        if self.verticalSplitArea(area): continue
+        self.horizontalSplitArea(area)
 
   def makeRoom(self):
     for area in self.area:
       self.makeRoomInArea(area)
+    for room in self._room:
+      self.putRoom(room)
+      self.makeRoomEntrance(room)
+
+  def putRoom(self, room):
+    for c in room.frame:
+      self._map.put(c, '#')
+    for c in room.reduce(1):
+      self._map.put(c, '.')
+
+  def makeRoomEntrance(self, room):
+    candidate = []
+    for c in room.frame:
+      if c.x == 0 or c.y == 0: continue
+      if c.x == self._map.width - 1 or c.y == self._map.height - 1: continue
+      if c.x % 2 == 0 and c.y % 2 == 0: continue
+      candidate.append(c)
+    for c in range(random.randrange(1, self._entranceMax + 1)):
+      e = random.choice(candidate)
+      self._entrance.append(e)
+      candidate.remove(e)
 
   def makeRoomInArea(self, area):
     roomArea = area.reduce(1)
     size = RoomSizeRange(self._roomSize.min, roomArea.size).randomSize()
-    x = random.choice([x for x in range(roomArea.x, roomArea.right - size.width + 2) if x % 2])
-    y = random.choice([y for y in range(roomArea.y, roomArea.bottom - size.height + 2) if y % 2])
+    x = random.choice([x for x in range(roomArea.x, roomArea.right - size.width + 2) if x % 2 == 0])
+    y = random.choice([y for y in range(roomArea.y, roomArea.bottom - size.height + 2) if y % 2 == 0])
     room = Rect(Coord(x, y), size)
     self._room.append(room)
 
@@ -107,10 +126,13 @@ if __name__ == '__main__':
   m = Matrix(size, ' ')
   for area in g.area:
     for c in area.frame:
+      print(c)
       m.put(c, '.')
   for room in g.room:
     for c in room.frame:
       m.put(c, '#')
+  for c in g._entrance:
+    m.put(c, '+')
 
   for line in m.lines:
     print(''.join(line))

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from generator import RoomSizeRange
+from generator import Generator
 from size import Size
 import unittest
 
@@ -32,3 +33,7 @@ class TestGenerator(unittest.TestCase):
     rooms = [rsr.randomSize() for c in range(100)]
     self.assertTrue(all([room == Size(1, 3) for room in rooms]))
 
+  def testSplitLineIsOdd(self):
+    g = Generator(Size(79, 21)).generate()
+    for area in g.area:
+      self.assertTrue(all([c.x % 2 == 0 or c.y % 2 == 0 for c in area.frame]))

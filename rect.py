@@ -12,6 +12,11 @@ class Rect(object):
   def __hash__(self):
     return hash((self.x, self.y, self.width, self.height))
 
+  def __iter__(self):
+    for y in range(self.top, self.bottom + 1):
+      for x in range(self.left, self.right + 1):
+        yield Coord(x, y)
+
   @property
   def x(self):
     return self._coord.x
@@ -73,6 +78,4 @@ class Rect(object):
     return (top, bottom)
 
   def reduce(self, value):
-    coord = self.coord + Coord(value, value)
-    size = self.size - Size(value * 2, value * 2)
-    return Rect(coord, size)
+    return Rect(self.coord, self.size - Size(value, value))
