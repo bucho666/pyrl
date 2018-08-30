@@ -94,7 +94,7 @@ class Generator(object):
     self._deadend = 2
     self._room = []
     self._entrance = []
-    self._diged = Matrix(size, False)
+    self._diged = set()
     self._deadends = []
 
   def __iter__(self):
@@ -204,9 +204,9 @@ class Generator(object):
     step = (coord + dir, coord + dir + dir)
     if any([self._map.isOutBound(c) for c in step]): return
     if any([self._map.at(c).isStopDig for c in step]): return
-    if any([self._diged.at(c) for c in step]): return
+    if any([c in self._diged for c in step]): return
     for c in step:
-      self._diged.put(c, True)
+      self._diged.add(c)
       if self._map.at(c) == Tile.NULL:
         self._map.put(c, Tile.CORRIDOR)
     self.digAround(step[1])
