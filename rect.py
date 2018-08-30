@@ -79,3 +79,6 @@ class Rect(object):
 
   def reduce(self, value):
     return Rect(self.coord, self.size - Size(value, value))
+
+  def shurink(self, value):
+    return Rect(self.coord + Coord(value, value), self.size - Size(value * 2, value * 2))

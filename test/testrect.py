@@ -53,6 +53,10 @@ class TestRect(unittest.TestCase):
     self.assertEqual(r.reduce(2), Rect(Coord(1, 2), Size(1, 2)))
     self.assertEqual(r.reduce(3), Rect(Coord(1, 2), Size(0, 1)))
 
+  def testShurink(self):
+    r = Rect(Coord(1, 2), Size(3, 4))
+    self.assertEqual(r.shurink(1), Rect(Coord(2, 3), Size(1, 2)))
+
   def testIterate(self):
     r = Rect(Coord(1, 2), Size(3, 4))
     result = [c for c in r]
@@ -63,5 +67,3 @@ class TestRect(unittest.TestCase):
         Coord(1, 5), Coord(2, 5), Coord(3, 5),
         ]
     self.assertTrue(all([a == b for a, b in zip(result, expect)]))
-
-

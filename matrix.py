@@ -4,6 +4,11 @@ class Matrix(object):
   def __init__(self, size, initial=None):
     self._map = [[initial for x in range(size.width)] for y in range(size.height)]
 
+  def __iter__(self):
+    for y in range(self.height):
+      for x in range(self.width):
+        yield Coord(x, y)
+
   @property
   def height(self):
     return len(self._map)
@@ -12,10 +17,10 @@ class Matrix(object):
   def width(self):
     return len(self._map[0])
 
-  def __iter__(self):
-    for y in range(self.height):
-      for x in range(self.width):
-        yield Coord(x, y)
+  @property
+  def lines(self):
+    for line in self._map:
+      yield line
 
   def at(self, coord):
     return self._map[coord.y][coord.x]
@@ -35,7 +40,3 @@ class Matrix(object):
   def line(self, y):
     return self._map[y]
 
-  @property
-  def lines(self):
-    for line in self._map:
-      yield line
