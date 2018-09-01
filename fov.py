@@ -38,7 +38,7 @@ class Vector(object):
 class Fov(object):
   def __init__(self, isVisible, radius=6):
     self._isVisible = isVisible
-    self._radius = radius ** 2
+    self._radius = (radius + 1) ** 2
     self._visibles = set()
     self._start = None
 

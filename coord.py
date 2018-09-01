@@ -1,3 +1,5 @@
+import math
+
 class Coord(object):
   def __init__(self, x, y):
     self._x = x
@@ -25,3 +27,18 @@ class Coord(object):
 
   def __str__(self):
     return str((self._x, self._y))
+
+  def toLine(self, to):
+    dx, dy = abs(to.x - self.x), abs(to.y - self.y)
+    sx = 1 if self.x < to.x else -1
+    sy = 1 if self.y < to.y else -1
+    x, y, error = self.x, self.y, dx - dy
+    while x != to.x or y != to.y:
+      error2 = error * 2
+      if error2 > -dy:
+        error -= dy
+        x += sx
+      if error2 < dx:
+        error += dx
+        y += sy
+      yield Coord(x, y)
