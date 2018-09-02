@@ -33,7 +33,7 @@ class Coord(object):
     sx = 1 if self.x < to.x else -1
     sy = 1 if self.y < to.y else -1
     x, y, error = self.x, self.y, dx - dy
-    while x != to.x or y != to.y:
+    while True:
       error2 = error * 2
       if error2 > -dy:
         error -= dy
@@ -41,4 +41,5 @@ class Coord(object):
       if error2 < dx:
         error += dx
         y += sy
+      if x == to.x and y == to.y: break
       yield Coord(x, y)

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 import parentpath
 from console import Console
-from console import Color
-from matrix import Matrix
 from coord import Coord
-from size import Size
 from fov import Fov
 import direction
 

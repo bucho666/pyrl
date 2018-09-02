@@ -12,4 +12,3 @@ class TestCoord(unittest.TestCase):
   def testPlusMinus(self):
     self.assertEqual(Coord(1, 2) + Coord(3, 4), Coord(4, 6))
     self.assertEqual(Coord(3, 4) - Coord(1, 2), Coord(2, 2))
-

@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 import parentpath
 from console import Console
-from console import Color
-from matrix import Matrix
 from coord import Coord
-from size import Size
-from fov import Fov
 import direction
 
 class LineDemo(object):
@@ -34,9 +30,10 @@ class LineDemo(object):
   def render(self):
     self._console.clear()
     self._console.move(self._center).write('@')
+    self._console.move(self._target).write('X')
     for c in self._center.toLine(self._target):
       self._console.move(c).write('.')
-    self._console.move(self._target).write('X').move(self._target)
+    self._console.move(self._target)
 
 if __name__ == '__main__':
   LineDemo().run()
