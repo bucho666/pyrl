@@ -1,4 +1,5 @@
 from coord import Coord
+from size import Size
 
 class Matrix(object):
   def __init__(self, size, initial=None):
@@ -16,6 +17,10 @@ class Matrix(object):
   @property
   def width(self):
     return len(self._map[0])
+
+  @property
+  def size(self):
+    return Size(self.width, self.height)
 
   @property
   def lines(self):
