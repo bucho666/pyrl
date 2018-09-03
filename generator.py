@@ -129,11 +129,7 @@ class Generator(object):
     return '\n'.join([''.join([t.ch for t in line]) for line in self._map.lines])
 
   def generate(self):
-    self.splitAreas()
-    self.makeRoom()
-    self.digCorridor()
-    self.removeDeadEnd()
-    return self
+    return self.splitAreas().makeRoom().digCorridor().removeDeadEnd()
 
   def splitAreas(self):
     lastSize = 0
@@ -142,6 +138,7 @@ class Generator(object):
       for area in self._area:
         if self.verticalSplitArea(area): continue
         self.horizontalSplitArea(area)
+    return self
 
   def verticalSplitArea(self, area):
     if area.width < self._roomSize.maxWidth * 2: return False
@@ -167,6 +164,7 @@ class Generator(object):
     for room in self._room:
       self.putRoom(room)
       self.makeRoomEntrance(room)
+    return self
 
   def makeRoomInArea(self, area):
     roomArea = area.reduce(1)
@@ -189,7 +187,7 @@ class Generator(object):
       if c.x == self._map.width - 1 or c.y == self._map.height - 1: continue
       if c.x % 2 == 0 and c.y % 2 == 0: continue
       candidate.append(c)
-    for c in range(random.randrange(1, self._entranceMax + 1)):
+    for c in range(random.randint(1, self._entranceMax)):
       e = random.choice(candidate)
       self._entrance.append(e)
       self._map.put(e, Tile.DOOR)
@@ -199,6 +197,7 @@ class Generator(object):
     for y in range(1, self._map.height, 2):
       for x in range(1, self._map.width, 2):
         self.digAround(Coord(x, y))
+    return self
 
   def startDigCorridor(self, coord, dir):
     step = (coord + dir, coord + dir + dir)
@@ -223,6 +222,7 @@ class Generator(object):
       de = random.choice(self._deadends)
       self._deadends.remove(de)
       self.fillDeadEnd(de)
+    return self
 
   def updateDeadEnd(self):
     for y in range(1, self._map.height, 2):
@@ -249,22 +249,3 @@ class Generator(object):
       if self._map.at(coord + d).isWall:
         wall += 1
     return wall == 3
-
-if __name__ == '__main__':
-  size = Size(79, 21)
-  g = Generator(size).setDeadEnd(3).generate()
-  m = Matrix(size, ' ')
-  for (c, t) in g:
-    m.put(c, t.ch)
-  for room in g.room:
-    inside = room.shurink(1)
-    for c in inside:
-      if random.randint(0, 2):
-        m.put(c, random.choice('abcdefghijklmnopqrstuvwxyz'))
-  deadends = [de for de in g.deadends]
-  random.shuffle(deadends)
-  m.put(deadends[0], '>')
-  m.put(deadends[1], '<')
-  m.put(deadends[2], '$')
-  for line in m.lines:
-    print(''.join([c for c in line]))

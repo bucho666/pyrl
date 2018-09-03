@@ -31,8 +31,8 @@ class GeneratorDemo(object):
     for room in self._generator.room:
       inside = room.shurink(1)
       for c in inside:
-        if random.randint(0, 2):
-          self._map.put(c, random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
+        if random.randint(0, 5) == 0:
+          self._map.put(c, random.choice('abcdefghijklmnopqrstuvwxyz%%%$$$'))
 
   def show(self):
     for line in self._map.lines:
