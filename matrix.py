@@ -1,14 +1,15 @@
-from coord import Coord
+import coord
 from size import Size
 
 class Matrix(object):
   def __init__(self, size, initial=None):
-    self._map = [[initial for x in range(size.width)] for y in range(size.height)]
+    w, h = size
+    self._map = [[initial for x in range(w)] for y in range(h)]
 
   def __iter__(self):
     for y in range(self.height):
       for x in range(self.width):
-        yield Coord(x, y)
+        yield (x, y)
 
   @property
   def height(self):
@@ -28,16 +29,19 @@ class Matrix(object):
       yield line
 
   def at(self, coord):
-    return self._map[coord.y][coord.x]
+    x, y = coord
+    return self._map[y][x]
 
   def put(self, coord, value):
-    self._map[coord.y][coord.x] = value
+    x, y = coord
+    self._map[y][x] = value
 
   def fill(self, value):
     self._map = [[value for x in range(self.width)] for y in range(self.height)]
 
   def isOutBound(self, coord):
-    return coord.x < 0 or coord.y < 0 or coord.x >= self.width or coord.y >= self.height
+    x, y = coord
+    return x < 0 or y < 0 or x >= self.width or y >= self.height
 
   def isInBound(self, coord):
     return not self.isOutBound(coord)
