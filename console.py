@@ -68,7 +68,8 @@ class Console(object):
     curses.wrapper(func)
 
   def move(self, coord):
-    self._console.move(coord.y, coord.x)
+    (x, y) = coord
+    self._console.move(y, x)
     return self
 
   def write(self, string, fg=Color.WHITE, bg=Color.BLACK):

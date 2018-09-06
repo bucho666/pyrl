@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import parentpath
-from console import Console
-from coord import Coord
+import coord
 import direction
+from console import Console
 
 class LineDemo(object):
   KeyMap = {
@@ -11,8 +11,8 @@ class LineDemo(object):
   }
 
   def __init__(self):
-    self._target = Coord(1, 1)
-    self._center = Coord(10, 10)
+    self._target = (1, 1)
+    self._center = (10, 10)
     self._console = Console()
 
   def run(self):
@@ -22,19 +22,18 @@ class LineDemo(object):
   def update(self):
     self.render()
     key = self._console.getKey()
-    self.moveTarget(self.KeyMap.get(key, Coord(0, 0)))
+    self.moveTarget(self.KeyMap.get(key, (0, 0)))
 
   def moveTarget(self, dir):
-    self._target = self._target + dir
+    self._target = coord.sum(self._target, dir)
 
   def render(self):
     self._console.clear()
     self._console.move(self._center).write('@')
     self._console.move(self._target).write('X')
-    for c in self._center.toLine(self._target):
+    for c in coord.line(self._center, self._target):
       self._console.move(c).write('.')
     self._console.move(self._target)
 
 if __name__ == '__main__':
   LineDemo().run()
-
