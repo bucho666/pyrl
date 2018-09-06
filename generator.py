@@ -129,11 +129,7 @@ class Generator(object):
     return '\n'.join([''.join([t.ch for t in line]) for line in self._map.lines])
 
   def generate(self):
-    self.splitAreas()
-    self.makeRoom()
-    self.digCorridor()
-    self.removeDeadEnd()
-    return self
+    return self.splitAreas().makeRoom().digCorridor().removeDeadEnd()
 
   def splitAreas(self):
     lastSize = 0
@@ -142,6 +138,7 @@ class Generator(object):
       for area in self._area:
         if self.verticalSplitArea(area): continue
         self.horizontalSplitArea(area)
+    return self
 
   def verticalSplitArea(self, area):
     if area.width < self._roomSize.maxWidth * 2: return False
@@ -167,6 +164,7 @@ class Generator(object):
     for room in self._room:
       self.putRoom(room)
       self.makeRoomEntrance(room)
+    return self
 
   def makeRoomInArea(self, area):
     roomArea = area.reduce(1)
@@ -199,6 +197,7 @@ class Generator(object):
     for y in range(1, self._map.height, 2):
       for x in range(1, self._map.width, 2):
         self.digAround((x, y))
+    return self
 
   def startDigCorridor(self, start, dir):
     step = (coord.sum(start, dir), coord.sum(start, dir, dir))
@@ -223,6 +222,7 @@ class Generator(object):
       de = random.choice(self._deadends)
       self._deadends.remove(de)
       self.fillDeadEnd(de)
+    return self
 
   def updateDeadEnd(self):
     for y in range(1, self._map.height, 2):
