@@ -1,7 +1,7 @@
 import random
-from matrix import Matrix
-from size import Size
+import coord
 import direction
+from matrix import Matrix
 
 class Cellular(object):
   def __init__(self, size):
@@ -30,7 +30,7 @@ class Cellular(object):
     areas.remove(biggestArea)
     biggestArea = list(biggestArea)
     for area in areas:
-      for c in random.choice(list(area)).toLine(random.choice(biggestArea)):
+      for c in coord.line(random.choice(list(area)), random.choice(biggestArea)):
         self._map.put(c, False)
     return self
 
@@ -45,9 +45,9 @@ class Cellular(object):
       flooded |= area
     return areas
 
-  def flood(self, coord, flooded):
-    for d in direction.AROUND:
-      c = coord + d
+  def flood(self, start, flooded):
+    for d in direction.CIRCLE:
+      c = coord.sum(start, d)
       if self._map.isOutBound(c): continue
       if self._map.at(c) == True: continue
       if c in flooded: continue
@@ -61,8 +61,9 @@ class Cellular(object):
     return self
 
   def iterate(self, surviveLimit, birthLimit):
-    nextGeneration = Matrix(self._map.size)
+    nextGeneration = Matrix(self._map.size, True)
     for c in self._map:
+      if self.isFrame(c): continue
       walls = self.countLiveNeighbours(c)
       if self._map.at(c):
         nextGeneration.put(c, walls >= surviveLimit)
@@ -70,11 +71,14 @@ class Cellular(object):
         nextGeneration.put(c, walls >= birthLimit)
     self._map = nextGeneration
 
+  def isFrame(self, point):
+    x, y = point
+    return x == 0 or y == 0 or x == self._map.width - 1 or y == self._map.height - 1
+
   def countLiveNeighbours(self, c):
     walls = 0
-    for d in direction.AROUND:
-      ac = c + d
-      if self._map.isOutBound(ac): return 9
-      if self._map.at(ac):
+    for d in direction.CIRCLE:
+      ac = coord.sum(c, d)
+      if self._map.isOutBound(ac) or self._map.at(ac):
         walls += 1
     return walls
