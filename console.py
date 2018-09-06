@@ -53,6 +53,10 @@ class Console(object):
     self._colors = None
     self._initialize()
 
+  @staticmethod
+  def run(func):
+    curses.wrapper(func)
+
   def nonBlocking(self):
     self._console.nodelay(True)
     return self
@@ -63,9 +67,6 @@ class Console(object):
       self._colors = ColorTable()
       self._noColor = ColorTable()
     return self
-
-  def run(self, func):
-    curses.wrapper(func)
 
   def move(self, coord):
     (x, y) = coord

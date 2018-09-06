@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import parentpath
 from console import Console
-from coord import Coord
 from fov import Fov
+import coord
 import direction
 
 class Map(object):
@@ -22,24 +22,26 @@ class Map(object):
 
   def render(self, screen):
    for y, line in enumerate(self._map):
-     screen.move(Coord(0, y)).write(line)
+     screen.move((0, y)).write(line)
 
-  def isWall(self, coord):
-    if self.isOutBound(coord):
+  def isWall(self, point):
+    if self.isOutBound(point):
       return True
-    return self._map[coord.y][coord.x] is '#'
+    x, y = point
+    return self._map[y][x] is '#'
 
-  def isFloor(self, coord):
-    if self.isOutBound(coord):
+  def isFloor(self, point):
+    if self.isOutBound(point):
       return False
-    return self._map[coord.y][coord.x] is ' '
+    x, y = point
+    return self._map[y][x] is ' '
 
-  def isOutBound(self, coord):
-    return coord.x < 0 or coord.y < 0 or\
-           coord.x >= len(self._map[0]) or coord.y >= len(self._map)
+  def isOutBound(self, point):
+    x, y = point
+    return x < 0 or y < 0 or x >= len(self._map[0]) or y >= len(self._map)
 
-  def isInBound(self, coord):
-    return not self.isOutBound(coord)
+  def isInBound(self, point):
+    return not self.isOutBound(point)
 
 class FovDemo(object):
   KeyMap = {
@@ -48,24 +50,26 @@ class FovDemo(object):
   }
 
   def __init__(self):
-    self._hero = Coord(1, 1)
+    self._hero = (1, 1)
     self._console = Console()
     self._map = Map()
     self._fov = Fov(self._map.isFloor, 5)
 
   def run(self):
+    self._console.run(self.main)
+
+  def main(self, *args):
     while True:
       self.update()
 
   def update(self):
     self.render()
     key = self._console.getKey()
-    self.moveHero(self.KeyMap.get(key, Coord(0, 0)))
+    self.moveHero(self.KeyMap.get(key, (0, 0)))
 
   def moveHero(self, dir):
-    nextCoord = self._hero + dir
-    if self._map.isWall(nextCoord):
-      return
+    nextCoord = coord.sum(self._hero, dir)
+    if self._map.isWall(nextCoord): return
     self._hero = nextCoord
 
   def render(self):
