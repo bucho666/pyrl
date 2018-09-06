@@ -1,12 +1,18 @@
 import math
 
-def sum(a, b):
-  (x1, y1), (x2, y2) = a, b
-  return (x1 + x2, y1 + y2)
+def sum(*coords):
+  x, y = 0, 0
+  for tx, ty in coords:
+    x += tx
+    y += ty
+  return (x, y)
 
-def sub(a, b):
-  (x1, y1), (x2, y2) = a, b
-  return (x1 - x2, y1 - y2)
+def sub(*coords):
+  x, y = coords[0]
+  for tx, ty in coords[1:]:
+    x -= tx
+    y -= ty
+  return (x, y)
 
 def line(start, end):
   (sx, sy), (ex, ey) = start, end

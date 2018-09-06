@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import parentpath
 import random
-from size import Size
 from matrix import Matrix
 from generator import Generator
 
@@ -39,4 +38,4 @@ class GeneratorDemo(object):
       print(''.join([c for c in line]))
 
 if __name__ == '__main__':
-  GeneratorDemo(Size(79, 21)).apply().show()
+  GeneratorDemo((79, 21)).apply().show()

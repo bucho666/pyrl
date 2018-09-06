@@ -3,42 +3,42 @@ import random
 from size import Size
 from matrix import Matrix
 from rect import Rect
-from coord import Coord
+import coord
 import direction
 
 class RoomSizeRange(object):
   def __init__(self, min, max):
-    self._min = min
-    self._max = max
+    self._min_width, self._min_height = min
+    self._max_width, self._max_height = max
 
   @property
   def min(self):
-    return self._min
+    return (self._min_width, self._min_height)
 
   @property
   def max(self):
-    return self._max
+    return (self._max_width, self._max_height)
 
   @property
   def minWidth(self):
-    return self._min.width
+    return self._min_width
 
   @property
   def minHeight(self):
-    return self._min.height
+    return self._min_height
 
   @property
   def maxWidth(self):
-    return self._max.width
+    return self._max_width
 
   @property
   def maxHeight(self):
-    return self._max.height
+    return self._max_height
 
   def randomSize(self):
-    widthCandidate = [w for w in range(self._min.width, self._max.width + 1) if w % 2]
-    heightCandidate = [h for h in range(self._min.height, self._max.height+ 1) if h % 2]
-    return Size(random.choice(widthCandidate), random.choice(heightCandidate))
+    widthCandidate = [w for w in range(self._min_width, self._max_width + 1) if w % 2]
+    heightCandidate = [h for h in range(self._min_height, self._max_height + 1) if h % 2]
+    return (random.choice(widthCandidate), random.choice(heightCandidate))
 
 class TileType(object):
   STOP_DIG = 1 << 1
@@ -88,8 +88,8 @@ class Tile(object):
 class Generator(object):
   def __init__(self, size):
     self._map = Matrix(size, Tile.NULL)
-    self._area = [Rect(Coord(0, 0), size)]
-    self._roomSize = RoomSizeRange(Size(7, 5), Size(13, 7))
+    self._area = [Rect((0, 0), size)]
+    self._roomSize = RoomSizeRange((7, 5), (13, 7))
     self._entranceMax = 4
     self._deadend = 2
     self._room = []
@@ -170,10 +170,10 @@ class Generator(object):
 
   def makeRoomInArea(self, area):
     roomArea = area.reduce(1)
-    size = RoomSizeRange(self._roomSize.min, roomArea.size).randomSize()
-    x = random.choice([x for x in range(roomArea.x, roomArea.right - size.width + 2) if x % 2 == 0])
-    y = random.choice([y for y in range(roomArea.y, roomArea.bottom - size.height + 2) if y % 2 == 0])
-    room = Rect(Coord(x, y), size)
+    (w, h) = RoomSizeRange(self._roomSize.min, roomArea.size).randomSize()
+    x = random.choice([x for x in range(roomArea.x, roomArea.right - w + 2) if x % 2 == 0])
+    y = random.choice([y for y in range(roomArea.y, roomArea.bottom - h + 2) if y % 2 == 0])
+    room = Rect((x, y), (w, h))
     self._room.append(room)
 
   def putRoom(self, room):
@@ -184,11 +184,11 @@ class Generator(object):
 
   def makeRoomEntrance(self, room):
     candidate = []
-    for c in room.frame:
-      if c.x == 0 or c.y == 0: continue
-      if c.x == self._map.width - 1 or c.y == self._map.height - 1: continue
-      if c.x % 2 == 0 and c.y % 2 == 0: continue
-      candidate.append(c)
+    for (x, y) in room.frame:
+      if x == 0 or y == 0: continue
+      if x == self._map.width - 1 or y == self._map.height - 1: continue
+      if x % 2 == 0 and y % 2 == 0: continue
+      candidate.append((x, y))
     for c in range(random.randrange(1, self._entranceMax + 1)):
       e = random.choice(candidate)
       self._entrance.append(e)
@@ -198,10 +198,10 @@ class Generator(object):
   def digCorridor(self):
     for y in range(1, self._map.height, 2):
       for x in range(1, self._map.width, 2):
-        self.digAround(Coord(x, y))
+        self.digAround((x, y))
 
-  def startDigCorridor(self, coord, dir):
-    step = (coord + dir, coord + dir + dir)
+  def startDigCorridor(self, start, dir):
+    step = (coord.sum(start, dir), coord.sum(start, dir, dir))
     if any([self._map.isOutBound(c) for c in step]): return
     if any([self._map.at(c).isStopDig for c in step]): return
     if any([c in self._diged for c in step]): return
@@ -211,11 +211,11 @@ class Generator(object):
         self._map.put(c, Tile.CORRIDOR)
     self.digAround(step[1])
 
-  def digAround(self, coord):
+  def digAround(self, start):
     dirs = list(direction.CROSS)
     random.shuffle(dirs)
     for d in dirs:
-      self.startDigCorridor(coord, d)
+      self.startDigCorridor(start, d)
 
   def removeDeadEnd(self):
     self.updateDeadEnd()
@@ -227,44 +227,25 @@ class Generator(object):
   def updateDeadEnd(self):
     for y in range(1, self._map.height, 2):
       for x in range(1, self._map.width, 2):
-        c = Coord(x, y)
+        c = (x, y)
         if self._map.at(c).isWall: continue
         if self.isDeadEnd(c):
           self._deadends.append(c)
 
-  def fillDeadEnd(self, coord):
-    if not self.isDeadEnd(coord): return
-    self._map.put(coord, Tile.NULL)
+  def fillDeadEnd(self, point):
+    if not self.isDeadEnd(point): return
+    self._map.put(point, Tile.NULL)
     for d in direction.CROSS:
-      step = coord + d
+      step = coord.sum(point, d)
       if self._map.at(step).isWall: continue
       self.fillDeadEnd(step)
       break
     for de in self._deadends:
       self._map.put(de, Tile.DEADEND)
 
-  def isDeadEnd(self, coord):
+  def isDeadEnd(self, point):
     wall = 0
     for d in direction.CROSS:
-      if self._map.at(coord + d).isWall:
+      if self._map.at(coord.sum(point, d)).isWall:
         wall += 1
     return wall == 3
-
-if __name__ == '__main__':
-  size = Size(79, 21)
-  g = Generator(size).setDeadEnd(3).generate()
-  m = Matrix(size, ' ')
-  for (c, t) in g:
-    m.put(c, t.ch)
-  for room in g.room:
-    inside = room.shurink(1)
-    for c in inside:
-      if random.randint(0, 2):
-        m.put(c, random.choice('abcdefghijklmnopqrstuvwxyz'))
-  deadends = [de for de in g.deadends]
-  random.shuffle(deadends)
-  m.put(deadends[0], '>')
-  m.put(deadends[1], '<')
-  m.put(deadends[2], '$')
-  for line in m.lines:
-    print(''.join([c for c in line]))
