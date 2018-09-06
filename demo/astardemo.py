@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import parentpath
-from console import Console
-from coord import Coord
-from astar import AStar
+import coord
 import direction
+from console import Console
+from astar import AStar
 
 class Map(object):
   def __init__(self):
@@ -22,14 +22,16 @@ class Map(object):
 
   def render(self, screen):
    for y, line in enumerate(self._map):
-     screen.move(Coord(0, y)).write(''.join(line))
+     screen.move((0, y)).write(''.join(line))
 
   def put(self, coord, terrain):
-    self._map[coord.y][coord.x] = terrain
+    x, y = coord
+    self._map[y][x] = terrain
 
   def cost(self, coord):
     if self.isOutBound(coord): return 255
-    terrain = self._map[coord.y][coord.x]
+    x, y = coord
+    terrain = self._map[y][x]
     if terrain == '#': return 99
     if terrain == '=': return 10
     if terrain == '"': return 2
@@ -37,8 +39,8 @@ class Map(object):
     return 255
 
   def isOutBound(self, coord):
-    return coord.x < 0 or coord.y < 0 or\
-           coord.x >= len(self._map[0]) or coord.y >= len(self._map)
+    x, y = coord
+    return x < 0 or y < 0 or x >= len(self._map[0]) or y >= len(self._map)
 
   def isInBound(self, coord):
     return not self.isOutBound(coord)
@@ -50,9 +52,9 @@ class AStarDemo(object):
   }
 
   def __init__(self):
-    self._cursor = Coord(1, 1)
-    self._start = Coord(1, 1)
-    self._goal = Coord(33, 8)
+    self._cursor = (1, 1)
+    self._start = (1, 1)
+    self._goal = (33, 8)
     self._console = Console()
     self._map = Map()
     self._astar = AStar(self._map.cost)
@@ -65,7 +67,7 @@ class AStarDemo(object):
     self.render()
     key = self._console.getKey()
     if key in self.KeyMap:
-      self._cursor += self.KeyMap.get(key)
+      self._cursor = coord.sum(self._cursor, self.KeyMap.get(key))
     else:
       self.putTerrain(key)
 
@@ -85,4 +87,3 @@ class AStarDemo(object):
 
 if __name__ == '__main__':
   AStarDemo().run()
-

@@ -1,4 +1,5 @@
 import direction
+import coord
 
 class Node(object):
   def __init__(self, parent, cost, coord, goal):
@@ -27,7 +28,7 @@ class Node(object):
 
   @property
   def around(self):
-    return [self._coord + d for d in direction.AROUND]
+    return [coord.sum(self._coord, d) for d in direction.CIRCLE]
 
   @property
   def cost(self):
@@ -41,8 +42,8 @@ class Node(object):
     return self._cost + self._heuristicCost
 
   def _calculateCost(self, goal):
-    diff = goal - self._coord
-    return max(abs(diff.x), abs(diff.y))
+    x, y = coord.sub(goal, self._coord)
+    return max(abs(x), abs(y))
 
 class AStar(object):
   def __init__(self, costAt):
@@ -61,7 +62,3 @@ class AStar(object):
         nodes.append(Node(n, n.cost + self._costAt(c), c, goal))
         opens.add(c)
       nodes.sort(key=Node.score)
-
-if __name__ == '__main__':
-  from demo.astardemo import AStarDemo
-  AStarDemo().run()

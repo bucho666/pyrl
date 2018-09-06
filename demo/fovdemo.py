@@ -56,9 +56,6 @@ class FovDemo(object):
     self._fov = Fov(self._map.isFloor, 5)
 
   def run(self):
-    self._console.run(self.main)
-
-  def main(self, *args):
     while True:
       self.update()
 
