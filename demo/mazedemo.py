@@ -2,11 +2,11 @@
 import parentpath
 import random
 from matrix import Matrix
-from generator import Generator
+from maze import Maze
 
-class GeneratorDemo(object):
+class MazeDemo(object):
   def __init__(self, size):
-    self._generator = Generator(size).setDeadEnd(3).generate()
+    self._maze = Maze(size).setDeadEnd(3).generate()
     self._map = Matrix(size, ' ')
 
   def apply(self):
@@ -16,18 +16,18 @@ class GeneratorDemo(object):
     return self
 
   def applyMap(self):
-    for (c, t) in self._generator:
+    for (c, t) in self._maze:
       self._map.put(c, t.ch)
 
   def putStairsAndTreasure(self):
-    deadends = [de for de in self._generator.deadends]
+    deadends = [de for de in self._maze.deadends]
     random.shuffle(deadends)
     self._map.put(deadends[0], '>')
     self._map.put(deadends[1], '<')
     self._map.put(deadends[2], '$')
 
   def putMonsterToRoom(self):
-    for room in self._generator.room:
+    for room in self._maze.room:
       inside = room.shurink(1)
       for c in inside:
         if random.randint(0, 5) == 0:
@@ -38,4 +38,4 @@ class GeneratorDemo(object):
       print(''.join([c for c in line]))
 
 if __name__ == '__main__':
-  GeneratorDemo((79, 21)).apply().show()
+  MazeDemo((79, 21)).apply().show()

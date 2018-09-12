@@ -85,7 +85,7 @@ class Tile(object):
   CORRIDOR = TileType(' ').stopDig()
   DEADEND = TileType('x')
 
-class Generator(object):
+class Maze(object):
   def __init__(self, size):
     self._map = Matrix(size, Tile.NULL)
     self._area = [Rect((0, 0), size)]

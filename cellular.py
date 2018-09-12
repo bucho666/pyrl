@@ -3,23 +3,6 @@ import coord
 import direction
 from matrix import Matrix
 
-#  cellular = Cellular((80, 20)).initialize(40).update(5, 3, 5).connect()
-#  for line in cellular.lines:
-#    print(''.join(['#' if c else '.' for c in line]))
-
-#  def connect(self):
-#    areas = self.areas()
-#    biggestArea = []
-#    for area in areas:
-#      if len(area) > len(biggestArea):
-#        biggestArea = area
-#    areas.remove(biggestArea)
-#    biggestArea = list(biggestArea)
-#    for area in areas:
-#      for c in coord.line(random.choice(list(area)), random.choice(biggestArea)):
-#        self._map.put(c, False)
-#    return self
-
 class Areas(object):
   def __init__(self, areas):
     self._areas = areas

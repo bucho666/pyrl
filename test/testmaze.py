@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from generator import RoomSizeRange
-from generator import Generator
+from maze import RoomSizeRange
+from maze import Maze
 import unittest
 
-class TestGenerator(unittest.TestCase):
+class TestMaze(unittest.TestCase):
   def testRoomSizeRangeProperty(self):
     rsr = RoomSizeRange((1, 3), (5, 7))
     self.assertEqual(rsr.minWidth, 1)
@@ -33,6 +33,6 @@ class TestGenerator(unittest.TestCase):
     self.assertTrue(all([room == (1, 3) for room in rooms]))
 
   def testSplitLineIsOdd(self):
-    g = Generator((79, 21)).generate()
+    g = Maze((79, 21)).generate()
     for area in g.area:
       self.assertTrue(all([x % 2 == 0 or y % 2 == 0 for (x, y) in area.frame]))
