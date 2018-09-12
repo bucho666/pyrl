@@ -10,3 +10,7 @@ W = (-1, 0)
 NW = (-1, -1)
 CROSS = (N ,E ,S, W)
 CIRCLE = (N, NE, E, SE, S, SW, W, NW)
+
+def opposite(d):
+  x, y = d
+  return (0 if x == 0 else -x, 0 if y == 0 else -y)
